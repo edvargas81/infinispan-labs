@@ -8,9 +8,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.infinispan.cdi.ConfigureCache;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.labs.lab1.transactions.JBoss7TransactionManagerLookup;
-import org.infinispan.loaders.CacheLoaderConfig;
-import org.infinispan.loaders.CacheStore;
-import org.infinispan.loaders.jdbc.stringbased.JdbcStringBasedCacheStoreConfig;
+import org.infinispan.loaders.jdbc.stringbased.JdbcStringBasedCacheStore;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.configuration.cache.Configuration;
@@ -37,7 +35,20 @@ public class Resources {
             .transaction().transactionManagerLookup(new JBoss7TransactionManagerLookup())
             .loaders()
                .shared(true)
-               .addCacheLoader(configureJdbcCacheStore())
+               .addCacheLoader()
+                  .cacheLoader(new JdbcStringBasedCacheStore())
+                  .addProperty("connectionFactoryClass", "org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory")
+                  .addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS")
+                  .addProperty("idColumnType", "VARCHAR(255)")
+                  .addProperty("idColumnName", "ID_COLUMN")
+                  .addProperty("dataColumnType", "BINARY")
+                  .addProperty("dataColumnName", "DATA_COLUMN")
+                  .addProperty("timestampColumnName", "TIMESTAMP_COLUMN")
+                  .addProperty("timestampColumnType", "BIGINT")
+                  .addProperty("stringsTableNamePrefix", "persistentStore")
+                  .addProperty("userName", "sa")
+                  .addProperty("password", "sa")
+                  .async().threadPoolSize(10)
             .jmxStatistics()
             .build();
    }
@@ -55,23 +66,5 @@ public class Resources {
    public Logger getLogger(InjectionPoint ip) {
       return Logger.getLogger(ip.getMember().getDeclaringClass().getName());
    }
-   
-   private static final CacheLoaderConfig configureJdbcCacheStore() {
-      JdbcStringBasedCacheStoreConfig jdbcStoreConfiguration = new JdbcStringBasedCacheStoreConfig();
-      jdbcStoreConfiguration.asyncStore().threadPoolSize(10);
-      jdbcStoreConfiguration.getConnectionFactoryConfig().setConnectionFactoryClass("org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory");
-      jdbcStoreConfiguration.getConnectionFactoryConfig().setDatasourceJndiLocation("java:jboss/datasources/ExampleDS");
-      jdbcStoreConfiguration.setCacheName("ticketAllocationCache");
-      jdbcStoreConfiguration.setIdColumnType("VARCHAR(255)");
-      jdbcStoreConfiguration.setIdColumnName("ID_COLIMN");
-      jdbcStoreConfiguration.setDataColumnName("DATA_COLUMN");
-      jdbcStoreConfiguration.setDataColumnType("BINARY");
-      jdbcStoreConfiguration.setTimestampColumnName("TIMESTAMP_COLUMN");
-      jdbcStoreConfiguration.setTimestampColumnType("BIGINT");
-      jdbcStoreConfiguration.getTableManipulation().setTableNamePrefix("persistentStore");
-      jdbcStoreConfiguration.setUserName("sa");
-      jdbcStoreConfiguration.setPassword("sa");
-      return jdbcStoreConfiguration;
-   }
-   
+
 }
