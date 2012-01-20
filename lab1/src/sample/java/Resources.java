@@ -26,7 +26,7 @@ public class Resources {
    @Produces
    public Configuration configureCache() {
       return new ConfigurationBuilder()
-            .clustering().mode(CacheMode.LOCAL)
+            .clustering().cacheMode(CacheMode.LOCAL)
             .build();
    }
    
