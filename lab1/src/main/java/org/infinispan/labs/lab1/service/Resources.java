@@ -6,16 +6,16 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.infinispan.cdi.ConfigureCache;
-import org.infinispan.cdi.OverrideDefault;
-import org.infinispan.config.Configuration;
-import org.infinispan.config.Configuration.CacheMode;
-import org.infinispan.config.GlobalConfiguration;
+import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.labs.lab1.transactions.JBoss7TransactionManagerLookup;
 import org.infinispan.loaders.CacheLoaderConfig;
 import org.infinispan.loaders.CacheStore;
 import org.infinispan.loaders.jdbc.stringbased.JdbcStringBasedCacheStoreConfig;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.infinispan.configuration.cache.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.CacheMode;
 
 /**
  * Cache definitions
@@ -32,8 +32,8 @@ public class Resources {
    @ConfigureCache("ticketAllocationCache")
    @Produces
    public Configuration configureCache() {
-      return new Configuration().fluent()
-            .clustering().mode(CacheMode.DIST_SYNC)
+      return new ConfigurationBuilder()
+            .clustering().cacheMode(CacheMode.DIST_SYNC)
             .transaction().transactionManagerLookup(new JBoss7TransactionManagerLookup())
             .loaders()
                .shared(true)
@@ -42,11 +42,10 @@ public class Resources {
             .build();
    }
    
-   @Produces @OverrideDefault
+   @Produces
    public EmbeddedCacheManager configureCacheManager() {
       return new DefaultCacheManager(
-            GlobalConfiguration
-               .getClusteredDefault().fluent()
+            GlobalConfigurationBuilder.defaultClusteredBuilder()
                   .transport()
                      .addProperty("configurationFile", "jgroups.xml")
                   .build());
