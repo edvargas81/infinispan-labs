@@ -6,8 +6,9 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.infinispan.cdi.ConfigureCache;
-import org.infinispan.config.Configuration;
-import org.infinispan.config.Configuration.CacheMode;
+import org.infinispan.configuration.cache.Configuration;
+import org.infinispan.configuration.cache.ConfigurationBuilder;
+import org.infinispan.configuration.cache.CacheMode;
 
 /**
  * Cache definitions
@@ -24,7 +25,7 @@ public class Resources {
    @ConfigureCache("ticketAllocationCache")
    @Produces
    public Configuration configureCache() {
-      return new Configuration().fluent()
+      return new ConfigurationBuilder()
             .clustering().mode(CacheMode.LOCAL)
             .build();
    }
