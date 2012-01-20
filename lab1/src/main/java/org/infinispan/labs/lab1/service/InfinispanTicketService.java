@@ -43,7 +43,7 @@ import javax.jms.XASession;
 import javax.transaction.TransactionManager;
 
 import org.infinispan.Cache;
-import org.infinispan.config.Configuration.CacheMode;
+import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.labs.lab1.TicketPopulator;
 import org.infinispan.labs.lab1.model.TicketAllocation;
 
@@ -131,14 +131,14 @@ public class InfinispanTicketService implements TicketService {
    }
 
    public String getNodeId() {
-      if (tickets.getConfiguration().getCacheMode() != CacheMode.LOCAL)
+      if (isCacheClustered())
          return tickets.getAdvancedCache().getCacheManager().getAddress().toString();
       else
          return "local cache";
    }
 
    public String getOwners(String key) {
-      if (tickets.getConfiguration().getCacheMode() != CacheMode.LOCAL) {
+      if (isCacheClustered()) {
          return asCommaSeparatedList(tickets.getAdvancedCache().getDistributionManager().locate(key));
       } else {
          return asCommaSeparatedList(Collections.singletonList("local"));
@@ -147,6 +147,10 @@ public class InfinispanTicketService implements TicketService {
 
    public TicketAllocation getTicketAllocation(String id) {
       return tickets.get(id);
+   }
+
+   private boolean isCacheClustered() {
+      return tickets.getCacheConfiguration().clustering().cacheMode() != CacheMode.LOCAL;
    }
 
    private static String asCommaSeparatedList(List<?> objects) {
