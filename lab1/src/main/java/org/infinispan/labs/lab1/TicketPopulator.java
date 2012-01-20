@@ -14,6 +14,7 @@ public class TicketPopulator {
    }
    
    public void populate() {
+      tickets.allocateTicket("galder", "M83 live");
       tickets.allocateTicket("pmuir", "Devoxx presents...");
       tickets.allocateTicket("sanne", "Devoxx presents...");
       tickets.allocateTicket("mmarkus", "Devoxx presents...");
