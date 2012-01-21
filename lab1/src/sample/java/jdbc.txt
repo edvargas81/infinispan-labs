@@ -1,18 +1,16 @@
-   private static final CacheLoaderConfig configureJdbcCacheStore() {
-      JdbcStringBasedCacheStoreConfig jdbcStoreConfiguration = new JdbcStringBasedCacheStoreConfig();
-      jdbcStoreConfiguration.asyncStore().threadPoolSize(10);
-      jdbcStoreConfiguration.getConnectionFactoryConfig().setConnectionFactoryClass("org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory");
-      jdbcStoreConfiguration.getConnectionFactoryConfig().setDatasourceJndiLocation("java:jboss/datasources/ExampleDS");
-      jdbcStoreConfiguration.setCacheName("ticketAllocationCache");
-      jdbcStoreConfiguration.setIdColumnType("VARCHAR(255)");
-      jdbcStoreConfiguration.setIdColumnName("ID_COLIMN");
-      jdbcStoreConfiguration.setDataColumnName("DATA_COLUMN");
-      jdbcStoreConfiguration.setDataColumnType("BINARY");
-      jdbcStoreConfiguration.setTimestampColumnName("TIMESTAMP_COLUMN");
-      jdbcStoreConfiguration.setTimestampColumnType("BIGINT");
-      jdbcStoreConfiguration.getTableManipulation().setTableNamePrefix("persistentStore");
-      jdbcStoreConfiguration.setUserName("sa");
-      jdbcStoreConfiguration.setPassword("sa");
-      return jdbcStoreConfiguration;
-   }
-  
+            .loaders()
+               .shared(true)
+               .addCacheLoader()
+                  .cacheLoader(new JdbcStringBasedCacheStore())
+                  .addProperty("connectionFactoryClass", "org.infinispan.loaders.jdbc.connectionfactory.ManagedConnectionFactory")
+                  .addProperty("datasourceJndiLocation", "java:jboss/datasources/ExampleDS")
+                  .addProperty("idColumnType", "VARCHAR(255)")
+                  .addProperty("idColumnName", "ID_COLUMN")
+                  .addProperty("dataColumnType", "BINARY")
+                  .addProperty("dataColumnName", "DATA_COLUMN")
+                  .addProperty("timestampColumnName", "TIMESTAMP_COLUMN")
+                  .addProperty("timestampColumnType", "BIGINT")
+                  .addProperty("stringsTableNamePrefix", "persistentStore")
+                  .addProperty("userName", "sa")
+                  .addProperty("password", "sa")
+                  .async().threadPoolSize(10)
