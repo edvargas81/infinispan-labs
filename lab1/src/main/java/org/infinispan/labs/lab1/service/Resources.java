@@ -2,6 +2,7 @@ package org.infinispan.labs.lab1.service;
 
 import java.util.logging.Logger;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -54,6 +55,7 @@ public class Resources {
    }
    
    @Produces
+   @ApplicationScoped
    public EmbeddedCacheManager configureCacheManager() {
       return new DefaultCacheManager(
             GlobalConfigurationBuilder.defaultClusteredBuilder()
